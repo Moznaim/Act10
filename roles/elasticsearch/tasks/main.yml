@@ -6,7 +6,6 @@
     state: present
   loop:
     - default-jdk
-    - java-11-openjdk
 
 - name: download elasticsearch (redhat)
   get_url:
@@ -23,7 +22,7 @@
 - name: download elasticsearch (debian)
   get_url:
     url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.15.3-amd64.deb
-    dest: /tmp/elasticsearch.db
+    dest: /tmp/elasticsearch.deb
   when: ansible_os_family == "Debian"
 
 - name: install elasticsearch (debian)
