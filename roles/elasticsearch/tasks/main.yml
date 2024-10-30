@@ -29,10 +29,37 @@
   command: dpkg -i /tmp/elasticsearch.deb
   when: ansible_os_family == "Debian"
 
+- name: Create systemd service for Elasticsearch
+  copy:
+    content: |
+      [Unit]
+      Description=Elasticsearch
+      Documentation=https://www.elastic.co
+      Wants=network-online.target
+      After=network-online.target
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/share/elasticsearch/bin/elasticsearch -p /var/run/elasticsearch/elasticsearch.pid
+      User=elasticsearch
+      Group=elasticsearch
+      Restart=on-failure
+      LimitNOFILE=65536
+      LimitNPROC=4096
+
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/elasticsearch.service
+    mode: '0644'
+
 - name: elasticsearch config
   template:
     src: elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
 
 - name: start and enable elasticsearch
   systemd:
